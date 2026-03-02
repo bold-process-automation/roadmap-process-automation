@@ -3,9 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Roadmap Process Automation Team</title>
+    <title>Roadmap Process Automation</title>
     
     <link rel="icon" type="image/png" href="logo-blanco-ball.png">
+    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
@@ -44,7 +45,7 @@
 
         body { font-family: 'Montserrat', sans-serif; font-weight: 400; background-color: var(--bg-page); color: var(--text-main); margin: 0; padding: 0; }
 
-        /* NUEVA IMAGEN DE CABEZAL (HEADER BLUE) */
+        /* NUEVO CABEZAL AZUL (HEADER BLUE) */
         .top-header {
             width: 100%;
             height: 160px; 
@@ -70,11 +71,38 @@
 
         .main-container { padding: 25px 30px; }
 
-        .controls-header { display: flex; align-items: center; margin-bottom: 15px; }
+        .controls-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px; }
         
         .tabs { display: flex; gap: 10px; }
         .tab { font-family: 'Montserrat', sans-serif; font-weight: 600; padding: 10px 25px; cursor: pointer; border-radius: 6px; background: var(--bold-gris-claro); color: var(--bold-azul); border: none; transition: all 0.2s ease; }
         .tab.active { background: var(--bold-coral); color: #fff; box-shadow: 0 4px 6px rgba(255, 40, 71, 0.2); }
+
+        /* ESTILOS DEL NUEVO TOGGLE SWITCH (SEMANAS / MESES) */
+        .view-toggle {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: #fff;
+            padding: 8px 16px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+            color: var(--bold-azul);
+            font-size: 13px;
+        }
+
+        #label-semanas { font-weight: 700; opacity: 1; transition: 0.3s; }
+        #label-meses { font-weight: 400; opacity: 0.5; transition: 0.3s; }
+        
+        .view-toggle.monthly-active #label-semanas { font-weight: 400; opacity: 0.5; }
+        .view-toggle.monthly-active #label-meses { font-weight: 700; opacity: 1; }
+
+        .switch { position: relative; display: inline-block; width: 46px; height: 24px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--bold-gris-lineas); transition: .4s; border-radius: 34px; }
+        .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.2);}
+        input:checked + .slider { background-color: var(--bold-coral); }
+        input:checked + .slider:before { transform: translateX(22px); }
 
         .legend-container { display: flex; flex-wrap: wrap; align-items: center; gap: 15px; margin-bottom: 20px; padding: 12px 15px; background: #fff; border: 1px solid var(--border-color); border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
         .legend-title { font-weight: 700; font-size: 13px; margin-right: 5px; color: var(--bold-azul); }
@@ -83,7 +111,26 @@
 
         .timeline-wrapper { background: #fff; border: 1px solid var(--border-color); border-radius: 8px; padding: 0; overflow-x: auto; overflow-y: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.05);}
         
-        .timeline-scroll-area { min-width: 9000px; position: relative; display: flex; flex-direction: column;}
+        /* EL LIENZO BASE (ANIMADO PARA EL TOGGLE) */
+        .timeline-scroll-area { 
+            min-width: 9000px; /* Vista Semanas */
+            position: relative; 
+            display: flex; 
+            flex-direction: column;
+            transition: min-width 0.5s cubic-bezier(0.25, 1, 0.5, 1); /* Transición suave al comprimir */
+        }
+
+        /* --- CLASES DINÁMICAS PARA LA VISTA MENSUAL --- */
+        .timeline-scroll-area.monthly-view {
+            min-width: 1400px; /* Comprime el mapa para verlo de corrido */
+        }
+        .timeline-scroll-area.monthly-view .weeks-header {
+            display: none; /* Oculta la barra de semanas */
+        }
+        .timeline-scroll-area.monthly-view .grid-week {
+            border-right-color: transparent; /* Borra las líneas punteadas interiores */
+        }
+        /* ---------------------------------------------- */
 
         .quarters-header { display: flex; border-bottom: 2px solid #fff; background: var(--bold-coral); color: white; border-radius: 8px 8px 0 0;}
         .quarter { text-align: center; font-weight: 700; font-size: 14px; padding: 6px 0; border-right: 2px solid rgba(255,255,255,0.4); box-sizing: border-box; }
@@ -97,7 +144,7 @@
 
         .grid-lines { position: absolute; top: 85px; bottom: 0; left: 0; right: 0; display: flex; z-index: 0; pointer-events: none; }
         .grid-month-container { display: flex; border-right: 2px solid var(--bold-gris-lineas); box-sizing: border-box; height: 100%;}
-        .grid-week { flex: 1; border-right: 1px dashed var(--bold-gris-claro); box-sizing: border-box; height: 100%; }
+        .grid-week { flex: 1; border-right: 1px dashed var(--bold-gris-claro); box-sizing: border-box; height: 100%; transition: border-color 0.3s ease;}
         .grid-month-container .grid-week:last-child { border-right: none; }
 
         .projects-area { position: relative; margin-top: 25px; padding-bottom: 40px; min-height: 300px; z-index: 1; }
@@ -141,7 +188,7 @@
     <header class="top-header">
         <div class="page-header">
             <img src="https://bold-process-automation.github.io/assets-project-graphic-design/bold-logo-palabra-blanco.png" alt="Logo Bold">
-            <h1>Roadmap Process Automation Team</h1>
+            <h1>Roadmap Process Automation</h1>
         </div>
     </header>
 
@@ -151,6 +198,15 @@
             <div class="tabs">
                 <button class="tab active" onclick="switchTab('Automation IA')">Automation IA</button>
                 <button class="tab" onclick="switchTab('Appian')">Appian</button>
+            </div>
+            
+            <div class="view-toggle" id="toggleContainer">
+                <span id="label-semanas">Semanas</span>
+                <label class="switch">
+                    <input type="checkbox" id="viewToggle" onchange="toggleViewMode()">
+                    <span class="slider"></span>
+                </label>
+                <span id="label-meses">Meses</span>
             </div>
         </div>
 
@@ -168,7 +224,7 @@
         </div>
 
         <div class="timeline-wrapper">
-            <div class="timeline-scroll-area">
+            <div class="timeline-scroll-area" id="mainScrollArea">
                 
                 <div class="quarters-header" id="quarters-header"></div>
                 <div class="months-header" id="months-header"></div>
@@ -270,6 +326,39 @@
             }
         }
 
+        function scrollToToday() {
+            const wrapper = document.querySelector('.timeline-wrapper');
+            const scrollArea = document.querySelector('.timeline-scroll-area');
+            if (!wrapper || !scrollArea) return;
+            
+            const scrollWidth = scrollArea.offsetWidth;
+            const wrapperWidth = wrapper.offsetWidth;
+            const today = new Date();
+            const daysPassed = (today - wStart) / (1000 * 60 * 60 * 24);
+            const todayPosition = (daysPassed / 365) * scrollWidth;
+            
+            const targetLeft = Math.max(0, todayPosition - (wrapperWidth / 2)); 
+            wrapper.scrollTo({ left: targetLeft, behavior: 'smooth' });
+        }
+
+        // LÓGICA DEL NUEVO BOTÓN TOGGLE (SEMANA VS MES)
+        function toggleViewMode() {
+            const isMonthly = document.getElementById('viewToggle').checked;
+            const scrollArea = document.getElementById('mainScrollArea');
+            const toggleContainer = document.getElementById('toggleContainer');
+            
+            if (isMonthly) {
+                scrollArea.classList.add('monthly-view');
+                toggleContainer.classList.add('monthly-active');
+            } else {
+                scrollArea.classList.remove('monthly-view');
+                toggleContainer.classList.remove('monthly-active');
+            }
+            
+            // Le damos medio segundo a la animación de compresión/expansión antes de re-centrar "Hoy"
+            setTimeout(scrollToToday, 550);
+        }
+
         function renderProjects() {
             const container = document.getElementById('projects-container');
             container.innerHTML = ''; 
@@ -353,24 +442,7 @@
             });
             
             container.style.height = `${rowEndPositions.length * 42 + 60}px`;
-
-            setTimeout(() => {
-                const wrapper = document.querySelector('.timeline-wrapper');
-                const scrollArea = document.querySelector('.timeline-scroll-area');
-                if (!wrapper || !scrollArea) return;
-                
-                const scrollWidth = scrollArea.offsetWidth;
-                const wrapperWidth = wrapper.offsetWidth;
-                
-                const today = new Date();
-                const daysPassed = (today - wStart) / (1000 * 60 * 60 * 24);
-                
-                const todayPosition = (daysPassed / 365) * scrollWidth;
-                
-                const targetLeft = Math.max(0, todayPosition - (wrapperWidth / 2)); 
-
-                wrapper.scrollTo({ left: targetLeft, behavior: 'smooth' });
-            }, 100);
+            setTimeout(scrollToToday, 100);
         }
 
         function switchTab(team) {
