@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Roadmap Process Automation Team</title>
     
-    <link rel="icon" type="image/png" href="https://bold-process-automation.github.io/assets-project-graphic-design/bold-logo-palabra-azul.png">
+    <link rel="icon" type="image/png" href="logo-blanco-ball.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
@@ -44,10 +44,11 @@
 
         body { font-family: 'Montserrat', sans-serif; font-weight: 400; background-color: var(--bg-page); color: var(--text-main); margin: 0; padding: 0; }
 
+        /* NUEVA IMAGEN DE CABEZAL (HEADER BLUE) */
         .top-header {
             width: 100%;
             height: 160px; 
-            background-image: url('header.png');
+            background-image: url('header-blue.png');
             background-size: cover;
             background-position: center;
             display: flex;
@@ -276,7 +277,6 @@
             if (!data || data.length === 0) return;
 
             let filteredData = data.filter(p => {
-                // MAGIA ANTI-ERRORES: Busca en la hoja por cualquiera de estos nombres
                 const tabCategory = p['Frente de trabajo'] || p['Frente'] || p['Plataforma'] || p['Equipo'];
                 if (!tabCategory) return false;
                 return tabCategory.toString().toLowerCase().trim() === currentTab;
