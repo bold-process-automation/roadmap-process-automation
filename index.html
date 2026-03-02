@@ -48,7 +48,6 @@
         .page-header img { height: 40px; }
         .page-header h1 { font-weight: 700; font-size: 24px; margin: 0; color: var(--bold-azul); }
 
-        /* Controles alineados a la izquierda sin el filtro */
         .controls-header { display: flex; align-items: center; margin-bottom: 15px; }
         
         .tabs { display: flex; gap: 10px; }
@@ -138,7 +137,7 @@
             <button class="tab active" onclick="switchTab('Automation IA')">Automation IA</button>
             <button class="tab" onclick="switchTab('Appian')">Appian</button>
         </div>
-        </div>
+    </div>
 
     <div class="legend-container">
         <span class="legend-title">Convenciones de Áreas:</span>
@@ -258,10 +257,30 @@
                 return p.Equipo.toString().toLowerCase().trim() === currentTab;
             });
 
+            // ==============================================================
+            // NUEVO ALGORITMO DE ORDENAMIENTO (3 NIVELES PARA CASCADA PERFECTA)
+            // ==============================================================
             filteredData.sort((a, b) => {
-                const dateA = new Date((a['Fecha de Inicio'] || '').toString().split('T')[0]);
-                const dateB = new Date((b['Fecha de Inicio'] || '').toString().split('T')[0]);
-                return dateA - dateB;
+                const parseDate = (d) => {
+                    if(!d) return 0;
+                    return new Date(d.toString().split('T')[0] + 'T00:00:00').getTime() || 0;
+                };
+
+                const dateA = parseDate(a['Fecha de Inicio']);
+                const dateB = parseDate(b['Fecha de Inicio']);
+
+                // Nivel 1: Por Fecha de Inicio (El motor de la cascada cronológica)
+                if (dateA !== dateB) return dateA - dateB;
+
+                // Nivel 2: Por Área (Agrupa los proyectos del mismo color si inician el mismo día)
+                const areaA = normalizeText(a['Área']);
+                const areaB = normalizeText(b['Área']);
+                if (areaA !== areaB) return areaA.localeCompare(areaB);
+
+                // Nivel 3: Por Fecha de Fin (Para que el más largo de un grupo de color quede arriba)
+                const endA = parseDate(a['Fecha de Fin']);
+                const endB = parseDate(b['Fecha de Fin']);
+                return endB - endA; 
             });
 
             const rowEndPositions = [];
@@ -326,7 +345,6 @@
             
             container.style.height = `${rowEndPositions.length * 42 + 60}px`;
 
-            // SCROLL AUTOMÁTICO A LA FECHA DE HOY
             setTimeout(() => {
                 const wrapper = document.querySelector('.timeline-wrapper');
                 const scrollArea = document.querySelector('.timeline-scroll-area');
@@ -336,8 +354,6 @@
                 const today = new Date();
                 const daysPassed = (today - windowStart) / (1000 * 60 * 60 * 24);
                 
-                // Calculamos dónde está la línea de hoy y restamos unos píxeles (400) 
-                // para que quede en el centro de la pantalla y no pegada a la izquierda
                 const todayPosition = (daysPassed / 365) * scrollWidth;
                 const targetLeft = Math.max(0, todayPosition - 400); 
 
