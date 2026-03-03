@@ -11,6 +11,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
 
     <style>
+        /* ==========================================================================
+           VARIABLES Y PALETA DE COLOR
+           ========================================================================== */
         :root {
             --bold-coral: #FF2847;
             --bold-azul: #121E6C;
@@ -50,6 +53,15 @@
         .tabs { display: flex; gap: 10px; }
         .tab { font-family: 'Montserrat', sans-serif; font-weight: 600; padding: 10px 25px; cursor: pointer; border-radius: 6px; background: var(--bold-gris-claro); color: var(--bold-azul); border: none; transition: all 0.2s ease; }
         .tab.active { background: var(--bold-coral); color: #fff; box-shadow: 0 4px 6px rgba(255, 40, 71, 0.2); }
+
+        /* NUEVO FILTRO POR ÁREAS */
+        .filter-container { display: flex; align-items: center; gap: 10px; font-size: 13px; font-weight: 700; color: var(--bold-azul); }
+        .filter-container select {
+            padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border-color); background-color: #fff;
+            color: var(--bold-azul); font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 13px;
+            outline: none; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.02); transition: all 0.2s ease;
+        }
+        .filter-container select:focus { border-color: var(--bold-coral); box-shadow: 0 2px 8px rgba(255, 40, 71, 0.15); }
 
         .view-toggle { display: flex; align-items: center; gap: 12px; background: #fff; padding: 8px 16px; border-radius: 8px; border: 1px solid var(--border-color); box-shadow: 0 2px 5px rgba(0,0,0,0.02); color: var(--bold-azul); font-size: 13px; }
         #label-semanas { font-weight: 700; opacity: 1; transition: 0.3s; }
@@ -110,69 +122,20 @@
         .badge { padding: 3px 8px; border-radius: 12px; font-size: 9px; background: rgba(255,255,255,0.25); font-weight: 600;}
         .project-bar[data-area="legal"] .badge { background: rgba(0,0,0,0.1); }
 
-        /* =========================================================
-           NUEVOS ÍCONOS DE ESTADO (AUMENTADOS A 18PX)
-           ========================================================= */
-        .status-icon {
-            height: 18px; 
-            width: auto;
-            display: inline-block;
-            margin-left: 4px;
-            filter: brightness(0) invert(1); /* Transforma a blanco brillante */
-        }
-        
-        /* Ajuste óptico específico para piloto para que empate en tamaño visual */
-        .status-icon.piloto-icon {
-            transform: scale(1.15);
-        }
-
-        /* Excepción para "Legal" (Amarillo) -> El ícono se vuelve Azul Bold */
-        .project-bar[data-area="legal"] .status-icon {
-            filter: brightness(0) invert(12%) sepia(35%) saturate(5412%) hue-rotate(227deg) brightness(90%) contrast(106%);
-        }
+        .status-icon { height: 18px; width: auto; display: inline-block; margin-left: 4px; filter: brightness(0) invert(1); }
+        .status-icon.piloto-icon { transform: scale(1.15); }
+        .project-bar[data-area="legal"] .status-icon { filter: brightness(0) invert(12%) sepia(35%) saturate(5412%) hue-rotate(227deg) brightness(90%) contrast(106%); }
         
         .today-line { position: absolute; top: 0; bottom: 0; width: 2px; background-color: var(--bold-coral); z-index: 20; pointer-events: none;}
         .today-label { position: absolute; bottom: 12px; left: 50%; transform: translateX(-50%); background: var(--bold-coral); color: white; padding: 5px 16px; border-radius: 12px; font-size: 11px; font-weight: 700; box-shadow: 0 2px 6px rgba(0,0,0,0.25);}
         
-        /* =========================================================
-           SISTEMA DE NOTIFICACIÓN DE SINCRONIZACIÓN (TOAST)
-           ========================================================= */
-        .sync-toast {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            background-color: var(--bold-azul);
-            color: white;
-            padding: 10px 20px;
-            border-radius: 30px;
-            font-size: 13px;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.25);
-            z-index: 9999;
-            opacity: 0;
-            transform: translateY(20px);
-            transition: all 0.3s ease;
-            pointer-events: none;
-        }
-        .sync-toast.show {
-            opacity: 1;
-            transform: translateY(0);
-        }
-        .spinner-small {
-            width: 14px; height: 14px;
-            border: 2px solid rgba(255,255,255,0.3);
-            border-top: 2px solid white;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .sync-toast { position: fixed; bottom: 30px; right: 30px; background-color: var(--bold-azul); color: white; padding: 10px 20px; border-radius: 30px; font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.25); z-index: 9999; opacity: 0; transform: translateY(20px); transition: all 0.3s ease; pointer-events: none; }
+        .sync-toast.show { opacity: 1; transform: translateY(0); }
+        .spinner-small { width: 14px; height: 14px; border: 2px solid rgba(255,255,255,0.3); border-top: 2px solid white; border-radius: 50%; animation: spin 1s linear infinite; }
         
-        /* Loader de pantalla completa solo para la primera vez absoluta */
         .loader-container { position: absolute; top: 80px; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 15px; color: var(--bold-azul); font-weight: 600; }
         .spinner-large { width: 40px; height: 40px; border: 4px solid var(--bold-gris-claro); border-top: 4px solid var(--bold-coral); border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
     </style>
 </head>
@@ -193,6 +156,22 @@
                 <button class="tab" onclick="switchTab('Automation IA')">Automation IA</button>
             </div>
             
+            <div class="filter-container">
+                <label for="areaFilter">Área:</label>
+                <select id="areaFilter" onchange="filterByArea()">
+                    <option value="all">Todas las áreas</option>
+                    <option value="risk">Risk</option>
+                    <option value="financial">Financial</option>
+                    <option value="sales">Sales</option>
+                    <option value="human-talent">Human Talent</option>
+                    <option value="legal">Legal</option>
+                    <option value="cs">CS</option>
+                    <option value="logistica">Logística</option>
+                    <option value="hubs">Hubs</option>
+                    <option value="marketing">Marketing</option>
+                </select>
+            </div>
+
             <div class="view-toggle" id="toggleContainer">
                 <span id="label-semanas">Semanas</span>
                 <label class="switch">
@@ -218,18 +197,14 @@
 
         <div class="timeline-wrapper">
             <div class="timeline-scroll-area" id="mainScrollArea">
-                
                 <div class="quarters-header" id="quarters-header"></div>
                 <div class="months-header" id="months-header"></div>
                 <div class="weeks-header" id="weeks-header"></div>
                 <div class="grid-lines" id="grid-lines"></div>
-                
                 <div class="projects-area" id="projects-container"></div>
-
                 <div id="today-marker" class="today-line" style="display: none;">
                     <div class="today-label">Hoy</div>
                 </div>
-
             </div>
         </div>
     </div> 
@@ -244,6 +219,7 @@
         const totalDays = (wEnd - wStart) / (1000 * 60 * 60 * 24);
 
         let currentTab = 'appian'; 
+        let currentArea = 'all'; // Nueva variable para controlar el filtro
         let data = []; 
 
         function renderCalendarHeaders() {
@@ -355,6 +331,14 @@
             }, 300);
         }
 
+        // Función que se activa al cambiar el Dropdown de Áreas
+        function filterByArea() {
+            currentArea = document.getElementById('areaFilter').value;
+            renderProjects();
+            // Centramos de nuevo a hoy para mantener el contexto
+            setTimeout(scrollToToday, 100); 
+        }
+
         function renderProjects() {
             const container = document.getElementById('projects-container');
             const scrollArea = document.getElementById('mainScrollArea');
@@ -363,9 +347,15 @@
             if (!data || data.length === 0) return;
 
             let filteredData = data.filter(p => {
+                // Filtro 1: Pestaña (Appian / Automation IA)
                 const tabCategory = p['Frente de trabajo'] || p['Frente'] || p['Plataforma'] || p['Equipo'];
-                if (!tabCategory) return false;
-                return tabCategory.toString().toLowerCase().trim() === currentTab;
+                const matchesTab = tabCategory && tabCategory.toString().toLowerCase().trim() === currentTab;
+
+                // Filtro 2: Área (Dropdown)
+                const areaValue = p['Área'] ? normalizeText(p['Área']) : 'default';
+                const matchesArea = currentArea === 'all' || areaValue === currentArea;
+
+                return matchesTab && matchesArea;
             });
 
             filteredData.sort((a, b) => {
@@ -417,9 +407,6 @@
                     const devName = project['Desarrollador'] || '';
                     const projName = project['Nombre del proyecto'] || 'Sin nombre';
 
-                    // ========================================================
-                    // LÓGICA DE ÍCONOS PNG
-                    // ========================================================
                     let iconHtml = '';
                     if (statusKey === 'dev') {
                         iconHtml = `<img src="dev.png" class="status-icon" title="Estado: Dev">`;
@@ -428,7 +415,6 @@
                     } else if (statusKey === 'prod') {
                         iconHtml = `<img src="prod.png" class="status-icon" title="Estado: Prod">`;
                     } else if (statusKey === 'piloto') {
-                        // Usando piloto1.png con clase extra para ajustar su escala óptica
                         iconHtml = `<img src="piloto1.png" class="status-icon piloto-icon" title="Estado: Piloto">`;
                     }
 
@@ -463,6 +449,11 @@
             currentTab = team.toLowerCase().trim(); 
             document.querySelectorAll('.tab').forEach(btn => btn.classList.remove('active'));
             event.target.classList.add('active');
+            
+            // Opcional: Reiniciar el filtro de área al cambiar de pestaña
+            // document.getElementById('areaFilter').value = 'all';
+            // currentArea = 'all';
+
             renderProjects();
         }
 
@@ -472,10 +463,8 @@
             const container = document.getElementById('projects-container');
             const syncToast = document.getElementById('sync-toast');
             
-            // Usamos sessionStorage. Se guarda durante tu visita, pero si das F5 fuerza el recálculo
             const cachedData = sessionStorage.getItem('boldRoadmapData');
 
-            // 1. CARGA INMEDIATA
             if (cachedData) {
                 try {
                     data = JSON.parse(cachedData);
@@ -483,7 +472,6 @@
                     setTimeout(scrollToToday, 100);
                     renderTodayLine();
                     
-                    // Mostrar notificación de que está buscando datos nuevos
                     syncToast.innerHTML = `<div class="spinner-small"></div> Sincronizando Sheets...`;
                     syncToast.classList.add('show');
                 } catch(e) { console.error("Error leyendo caché", e); }
@@ -491,25 +479,20 @@
                 container.innerHTML = `<div class="loader-container"><div class="spinner-large"></div><span>Conectando con Google Sheets...</span></div>`;
             }
 
-            // 2. FETCH SILENCIOSO (¡Con trampa anti-caché de navegador!)
             try {
-                // El parámetro ?t= obliga al navegador a saltarse el caché y hacer la petición real siempre
                 const noCacheUrl = sheetApiUrl + "?t=" + new Date().getTime();
                 const response = await fetch(noCacheUrl, { cache: "no-store" });
                 const freshData = await response.json();
                 
-                // Siempre actualiza los datos por si agregaste filas nuevas
                 data = freshData;
                 sessionStorage.setItem('boldRoadmapData', JSON.stringify(data));
                 
-                // Re-dibujamos con los datos ultra-frescos
                 renderProjects();
                 renderTodayLine();
                 
                 if (!cachedData) {
                     setTimeout(scrollToToday, 100);
                 } else {
-                    // Si ya había cargado rápido, avisa que la actualización terminó
                     syncToast.innerHTML = `✅ ¡Actualizado!`;
                     setTimeout(() => syncToast.classList.remove('show'), 2500);
                 }
