@@ -27,7 +27,6 @@
             --text-main: var(--bold-azul);
             --border-color: var(--bold-gris-oscuro);
             
-            /* MAPEO EXACTO DE COLORES DE FEEDBACK A LAS 18 ÁREAS */
             --area-risk: #610017;
             --area-financial: #C31A2F;
             --area-sales: #0A53A5;
@@ -59,33 +58,34 @@
 
         .main-container { padding: 25px 30px; }
 
-        .controls-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
-        
+        /* ==========================================================================
+           CONTROLES, PESTAÑAS Y LEYENDA DE ESTADOS
+           ========================================================================== */
+        .controls-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; flex-wrap: wrap; gap: 15px; }
+        .left-controls { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
+        .right-controls { display: flex; align-items: center; gap: 15px; flex-wrap: wrap; }
+
         .tabs { display: flex; gap: 10px; }
         .tab { font-family: 'Montserrat', sans-serif; font-weight: 600; padding: 10px 25px; cursor: pointer; border-radius: 6px; background: var(--bold-gris-claro); color: var(--bold-azul); border: none; transition: all 0.2s ease; }
         .tab.active { background: var(--bold-coral); color: #fff; box-shadow: 0 4px 6px rgba(255, 40, 71, 0.2); }
 
-        .right-controls { display: flex; align-items: center; gap: 15px; }
+        /* NUEVA LEYENDA DE ESTADOS (DEV, TEST, PROD, PILOTO) */
+        .status-legend { display: flex; align-items: center; gap: 15px; font-size: 12px; font-weight: 600; color: var(--bold-azul); background: #fff; padding: 8px 15px; border-radius: 8px; border: 1px solid var(--border-color); box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
+        .sl-title { font-weight: 700; margin-right: 5px; color: #555; }
+        .sl-item { display: flex; align-items: center; gap: 6px; }
+        .sl-icon { height: 16px; width: auto; filter: brightness(0) invert(12%) sepia(35%) saturate(5412%) hue-rotate(227deg) brightness(90%) contrast(106%); }
+        .sl-piloto { transform: scale(1.15); }
 
         /* ==========================================================================
-           FILTRO TIPO EXCEL / LEYENDA
+           FILTRO TIPO EXCEL / LEYENDA DE ÁREAS
            ========================================================================== */
         .custom-filter { position: relative; font-family: 'Montserrat', sans-serif; }
         
-        .filter-btn {
-            display: flex; align-items: center; gap: 8px; padding: 8px 16px; border-radius: 8px; 
-            border: 1px solid var(--border-color); background-color: #fff; color: var(--bold-azul); 
-            font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 13px; 
-            cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.02); transition: all 0.2s ease;
-        }
+        .filter-btn { display: flex; align-items: center; gap: 8px; padding: 8px 16px; border-radius: 8px; border: 1px solid var(--border-color); background-color: #fff; color: var(--bold-azul); font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 13px; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.02); transition: all 0.2s ease; }
         .filter-btn:hover { border-color: var(--bold-coral); }
         .filter-btn::after { content: '▼'; font-size: 10px; opacity: 0.6; }
 
-        .filter-panel {
-            position: absolute; top: 110%; right: 0; background: #fff; width: 280px;
-            border-radius: 8px; box-shadow: 0 6px 20px rgba(0,0,0,0.15); border: 1px solid var(--border-color);
-            z-index: 1000; display: none; flex-direction: column; padding: 15px; box-sizing: border-box;
-        }
+        .filter-panel { position: absolute; top: 110%; right: 0; background: #fff; width: 280px; border-radius: 8px; box-shadow: 0 6px 20px rgba(0,0,0,0.15); border: 1px solid var(--border-color); z-index: 1000; display: none; flex-direction: column; padding: 15px; box-sizing: border-box; }
         .filter-panel.show { display: flex; animation: fadeIn 0.2s ease; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
 
@@ -95,10 +95,7 @@
         .fp-clear:hover { text-decoration: underline; }
 
         .fp-search-box { margin-bottom: 10px; }
-        .fp-search-box input {
-            width: 100%; padding: 8px 10px; border-radius: 4px; border: 1px solid #ccc;
-            font-family: 'Montserrat', sans-serif; font-size: 12px; box-sizing: border-box; outline: none;
-        }
+        .fp-search-box input { width: 100%; padding: 8px 10px; border-radius: 4px; border: 1px solid #ccc; font-family: 'Montserrat', sans-serif; font-size: 12px; box-sizing: border-box; outline: none; }
         .fp-search-box input:focus { border-color: var(--bold-azul); }
 
         .fp-list { max-height: 250px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; padding-bottom: 10px; border-bottom: 1px solid #eee; margin-bottom: 10px; }
@@ -163,7 +160,6 @@
 
         .projects-area { position: relative; margin-top: 25px; padding-bottom: 50px; min-height: 300px; z-index: 1; }
 
-        /* CÁPSULAS DE PROYECTOS */
         .project-bar { 
             position: absolute; height: 30px; border-radius: 15px; 
             display: flex; align-items: center; justify-content: space-between; 
@@ -181,23 +177,16 @@
         .status-icon { height: 18px; width: auto; display: inline-block; margin-left: 4px; filter: brightness(0) invert(1); }
         .status-icon.piloto-icon { transform: scale(1.15); }
 
-        /* ==========================================================================
-           EXCEPCIONES DE LEGIBILIDAD PARA ÁREAS CON COLORES MUY CLAROS
-           ========================================================================== */
+        /* EXCEPCIONES PARA ÁREAS CLARAS */
         .project-bar[data-area="legal-y-cumplimiento"],
         .project-bar[data-area="sci"],
         .project-bar[data-area="procurement"],
-        .project-bar[data-area="human-ops"] {
-            color: var(--bold-azul);
-        }
+        .project-bar[data-area="human-ops"] { color: var(--bold-azul); }
 
         .project-bar[data-area="legal-y-cumplimiento"] .badge,
         .project-bar[data-area="sci"] .badge,
         .project-bar[data-area="procurement"] .badge,
-        .project-bar[data-area="human-ops"] .badge {
-            background: rgba(0,0,0,0.08); 
-            color: var(--bold-azul); 
-        }
+        .project-bar[data-area="human-ops"] .badge { background: rgba(0,0,0,0.08); color: var(--bold-azul); }
 
         .project-bar[data-area="legal-y-cumplimiento"] .status-icon,
         .project-bar[data-area="sci"] .status-icon,
@@ -205,7 +194,6 @@
         .project-bar[data-area="human-ops"] .status-icon {
             filter: brightness(0) invert(12%) sepia(35%) saturate(5412%) hue-rotate(227deg) brightness(90%) contrast(106%);
         }
-        /* ========================================================================== */
         
         .today-line { position: absolute; top: 0; bottom: 0; width: 2px; background-color: var(--bold-coral); z-index: 20; pointer-events: none;}
         .today-label { position: absolute; bottom: 12px; left: 50%; transform: translateX(-50%); background: var(--bold-coral); color: white; padding: 5px 16px; border-radius: 12px; font-size: 11px; font-weight: 700; box-shadow: 0 2px 6px rgba(0,0,0,0.25);}
@@ -232,13 +220,22 @@
     <div class="main-container">
         
         <div class="controls-header">
-            <div class="tabs">
-                <button class="tab active" onclick="switchTab('Appian')">Appian</button>
-                <button class="tab" onclick="switchTab('Automation IA')">Automation IA</button>
+            <div class="left-controls">
+                <div class="tabs">
+                    <button class="tab active" onclick="switchTab('Appian')">Appian</button>
+                    <button class="tab" onclick="switchTab('Automation IA')">Automation IA</button>
+                </div>
+                
+                <div class="status-legend">
+                    <span class="sl-title">Estados:</span>
+                    <div class="sl-item"><img src="dev.png" class="sl-icon" alt="Dev"> Dev</div>
+                    <div class="sl-item"><img src="test.png" class="sl-icon" alt="Test"> Test</div>
+                    <div class="sl-item"><img src="prod.png" class="sl-icon" alt="Prod"> Prod</div>
+                    <div class="sl-item"><img src="piloto1.png" class="sl-icon sl-piloto" alt="Piloto"> Piloto</div>
+                </div>
             </div>
             
             <div class="right-controls">
-                
                 <div class="custom-filter" id="customFilter">
                     <button class="filter-btn" id="filterBtnText" onclick="toggleFilterMenu()">Áreas y Filtros</button>
                     
