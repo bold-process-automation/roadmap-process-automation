@@ -6,30 +6,16 @@
     --bold-gris-oscuro: #CCCCCC;
     --bold-gris-claro: #F2F2F2;
     --bold-gris-lineas: #A0AABF; 
-    
     --bg-page: var(--bold-blanco);
     --text-main: var(--bold-azul);
     --border-color: var(--bold-gris-oscuro);
     
-    --area-risk: #610017;
-    --area-financial: #C31A2F;
-    --area-sales: #0A53A5;
-    --area-human-talent: #1B8959;
-    --area-legal-y-cumplimiento: #FFC217;
-    --area-cs: #0B3B26;
-    --area-logistica: #052D65;
-    --area-hubs: #910022;
-    --area-marketing: #227AD1;
-    --area-credito: #5B3100;
-    --area-partners: #A16B00;
-    --area-sales-ops: #6CDCAB;
-    --area-smb: #1E1E1E;
-    --area-inbound: #606060;
-    --area-cx: #969696;
-    --area-sci: #FBF3F5;
-    --area-procurement: #FFF3D1;
-    --area-human-ops: #F3F3F3;
-    
+    --area-risk: #610017; --area-financial: #C31A2F; --area-sales: #0A53A5;
+    --area-human-talent: #1B8959; --area-legal-y-cumplimiento: #FFC217; --area-cs: #0B3B26;
+    --area-logistica: #052D65; --area-hubs: #910022; --area-marketing: #227AD1;
+    --area-credito: #5B3100; --area-partners: #A16B00; --area-sales-ops: #6CDCAB;
+    --area-smb: #1E1E1E; --area-inbound: #606060; --area-cx: #969696;
+    --area-sci: #FBF3F5; --area-procurement: #FFF3D1; --area-human-ops: #F3F3F3;
     --area-default: linear-gradient(135deg, #d00030 0%, #00308f 100%); 
 }
 
@@ -85,10 +71,6 @@ body { font-family: 'Montserrat', sans-serif; font-weight: 400; background-color
 .fp-btn-cancel { flex: 1; background: var(--bold-gris-claro); color: var(--bold-azul); border: none; padding: 8px; border-radius: 4px; font-weight: 600; cursor: pointer; transition: 0.2s;}
 .fp-btn-cancel:hover { background: #e0e0e0; }
 
-.fp-list::-webkit-scrollbar { width: 6px; }
-.fp-list::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 4px;}
-.fp-list::-webkit-scrollbar-thumb { background: #ccc; border-radius: 4px;}
-
 .view-toggle { display: flex; align-items: center; gap: 12px; background: #fff; padding: 8px 16px; border-radius: 8px; border: 1px solid var(--border-color); box-shadow: 0 2px 5px rgba(0,0,0,0.02); color: var(--bold-azul); font-size: 13px; }
 #label-semanas { font-weight: 700; opacity: 1; transition: 0.3s; }
 #label-meses { font-weight: 400; opacity: 0.5; transition: 0.3s; }
@@ -130,12 +112,19 @@ input:checked + .slider:before { transform: translateX(22px); }
 
 .projects-area { position: relative; margin-top: 25px; padding-bottom: 50px; min-height: 300px; z-index: 1; }
 
+/* ==========================================================================
+   DISEÑO BASE - TARJETAS (SEMANAS)
+   ========================================================================== */
 .project-bar { 
     position: absolute; 
+    height: 30px; 
+    border-radius: 15px; 
     display: flex; 
     align-items: center; 
     justify-content: space-between; 
+    padding: 0 12px; 
     color: white; 
+    font-size: 11.5px; 
     font-weight: 600; 
     box-shadow: 0 2px 4px rgba(0,0,0,0.15); 
     box-sizing: border-box; 
@@ -144,6 +133,14 @@ input:checked + .slider:before { transform: translateX(22px); }
 }
 .project-bar:hover { transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.25); z-index: 100 !important; cursor: default; }
 
+.project-title { 
+    white-space: nowrap; 
+    overflow: hidden; 
+    text-overflow: ellipsis; 
+    flex-grow: 1; 
+}
+
+.badges { display: flex; gap: 5px; align-items: center; flex-shrink: 0; }
 .badge { padding: 3px 8px; border-radius: 12px; font-size: 9px; background: rgba(255,255,255,0.25); font-weight: 600;}
 .status-icon { height: 18px; width: auto; display: inline-block; margin-left: 4px; filter: brightness(0) invert(1); }
 .status-icon.piloto-icon { transform: scale(1.15); }
@@ -163,3 +160,27 @@ input:checked + .slider:before { transform: translateX(22px); }
 .loader-container { position: absolute; top: 80px; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 15px; color: var(--bold-azul); font-weight: 600; }
 .spinner-large { width: 40px; height: 40px; border: 4px solid var(--bold-gris-claro); border-top: 4px solid var(--bold-coral); border-radius: 50%; animation: spin 1s linear infinite; }
 @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+/* ==========================================================================
+   DISEÑO GORDITO Y ESTRICTO (MESES) - ¡ESTO RESOLVERÁ TU PROBLEMA!
+   ========================================================================== */
+.timeline-scroll-area.monthly-view .project-bar {
+    height: auto !important;
+    min-height: 48px !important;    /* Tarjetas más altas (gorditas) */
+    border-radius: 12px !important; /* Bordes ligeramente más cuadrados, luce mejor en 2 líneas */
+    padding: 6px 12px !important;
+    align-items: center;
+    /* Un min-width muy sutil solo para proteger las imágenes de colapsar, pero NO estira la barra absurdamente */
+    min-width: 60px !important; 
+}
+
+.timeline-scroll-area.monthly-view .project-title {
+    white-space: normal !important; /* Permite bajar al renglón de abajo */
+    line-height: 1.2;
+    font-size: 11px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;          /* Limita a 2 renglones súper estéticos */
+    -webkit-box-orient: vertical;
+    overflow: hidden;               /* Esconde limpiamente lo que físicamente no quepa */
+    margin-right: 5px;
+}
