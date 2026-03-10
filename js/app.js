@@ -125,7 +125,7 @@ function renderCalendarHeaders() {
     document.getElementById('grid-lines').innerHTML = htmlGrid;
 }
 
-// APLANADORA DE HORAS: Fuerza todo a las 00:00:00 para alinear al milímetro
+// LA APLANADORA DE FECHAS
 function parseDateSafe(dateValue) {
     if (!dateValue) return null;
     const str = dateValue.toString().trim();
@@ -205,9 +205,9 @@ function renderProjects() {
     const rowEndPositions = [];
     const containerWidth = scrollArea.offsetWidth || 3800; 
     
-    // MAGIA DE ESTILOS INFALIBLE DESDE JAVASCRIPT
-    const isMonthly = document.getElementById('viewToggle').checked;
-    const rowSpacing = isMonthly ? 56 : 40; 
+    // Espacio generoso para que las tarjetas gorditas no choquen arriba y abajo
+    const isMonthly = scrollArea.classList.contains('monthly-view');
+    const rowSpacing = isMonthly ? 58 : 40; 
 
     filteredData.forEach(project => {
         const leftPos = getTimelinePosition(project['Fecha de Inicio']);
@@ -224,23 +224,12 @@ function renderProjects() {
             bar.setAttribute('data-area', areaKey);
             
             const displayLeft = Math.max(0, leftPos);
-            const displayWidthPct = Math.min(rightPos - leftPos - (displayLeft - leftPos), 100 - displayLeft);
+            // MATEMÁTICA ESTRICTA: El ancho será EXACTO a las fechas (Sin hackeos de min-width en JS)
+            let dateWidthPct = rightPos - leftPos;
+            const displayWidthPct = Math.min(dateWidthPct - (displayLeft - leftPos), 100 - displayLeft);
 
             bar.style.left = `${displayLeft}%`;
             bar.style.width = `${displayWidthPct}%`;
-            
-            // INYECCIÓN DIRECTA DE ESTILOS GORDITOS SI ES MESES
-            if (isMonthly) {
-                bar.style.height = '48px';
-                bar.style.borderRadius = '24px';
-                bar.style.minWidth = '180px'; // Obliga a que siempre haya espacio para leer
-                bar.style.padding = '0 16px';
-            } else {
-                bar.style.height = '30px';
-                bar.style.borderRadius = '15px';
-                bar.style.minWidth = 'max-content';
-                bar.style.padding = '0 12px';
-            }
             
             if (areaKey === 'default') {
                 bar.style.background = `var(--area-default)`;
@@ -260,25 +249,22 @@ function renderProjects() {
             else if (statusKey === 'prod') iconHtml = `<img src="assets/prod.png" class="status-icon">`;
             else if (statusKey === 'piloto') iconHtml = `<img src="assets/piloto1.png" class="status-icon piloto-icon">`;
 
-            // INYECCIÓN DIRECTA DE ESTILOS DE TEXTO (2 LÍNEAS)
-            const titleStyle = isMonthly 
-                ? `white-space: normal; line-height: 1.1; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; flex-grow: 1; padding-right: 6px; font-size: 11px; word-break: break-word;`
-                : `white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex-grow: 1; padding-right: 6px; font-size: 11.5px;`;
-
             bar.innerHTML = `
-                <span class="project-title" style="${titleStyle}">${projName}</span>
-                <div class="badges" style="display: flex; gap: 5px; align-items: center; flex-shrink: 0;">
+                <span class="project-title">${projName}</span>
+                <div class="badges">
                     ${devName && devName.toLowerCase() !== 'n/a' ? `<span class="badge">${devName}</span>` : ''}
                     ${iconHtml}
                 </div>
             `;
             
+            // Renderizamos primero para poder medir la tarjeta real
             container.appendChild(bar);
 
-            // CÁLCULO DE COLISIÓN PERFECTO
+            // CÁLCULO DE COLISIÓN PERFECTO Y A PRUEBA DE FALLOS
+            // Mide físicamente cuánto ocupó la tarjeta en la pantalla con el CSS aplicado
             const actualWidthPx = bar.getBoundingClientRect().width || bar.offsetWidth;
             const visualWidthPct = (actualWidthPx / containerWidth) * 100;
-            const visualRightPos = displayLeft + visualWidthPct;
+            const visualRightPos = displayLeft + Math.max(displayWidthPct, visualWidthPct);
 
             let currentRow = 0;
             while (rowEndPositions[currentRow] !== undefined && rowEndPositions[currentRow] > (displayLeft - 0.2)) {
