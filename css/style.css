@@ -18,6 +18,9 @@
     --area-smb: #1E1E1E; --area-inbound: #606060; --area-cx: #969696;
     --area-sci: #FBF3F5; --area-procurement: #FFF3D1; --area-human-ops: #F3F3F3;
     
+    /* NUEVA ÁREA PERÚ (Morado vibrante) */
+    --area-peru: #8E44AD;
+    
     --area-default: linear-gradient(135deg, #d00030 0%, #00308f 100%); 
 }
 
@@ -115,7 +118,7 @@ input:checked + .slider:before { transform: translateX(22px); }
 .projects-area { position: relative; margin-top: 35px; padding-bottom: 50px; min-height: 300px; z-index: 1; }
 
 /* ==========================================================================
-   DISEÑO BASE DE LAS BARRAS "GORDITAS"
+   DISEÑO BASE DE LAS BARRAS (Universales)
    ========================================================================== */
 .project-bar { 
     position: absolute; 
@@ -127,9 +130,7 @@ input:checked + .slider:before { transform: translateX(22px); }
     color: white; 
     box-shadow: 0 2px 4px rgba(0,0,0,0.15); 
     box-sizing: border-box; 
-    /* ¡Magia! Garantiza que la barra SIEMPRE sea lo suficientemente ancha para leer algo,
-       incluso si dura 1 solo día, para que las burbujas quepan bien */
-    min-width: 140px; 
+    min-width: 140px; /* Asegura que el texto respire */
     transition: transform 0.2s ease, box-shadow 0.2s ease; 
 }
 .project-bar:hover { transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.25); z-index: 100 !important; cursor: default; }
@@ -140,84 +141,112 @@ input:checked + .slider:before { transform: translateX(22px); }
     font-size: 11.5px;
     font-weight: 600;
     display: -webkit-box;
-    -webkit-line-clamp: 2; /* Texto en máximo 2 renglones limpios */
+    -webkit-line-clamp: 2; 
     -webkit-box-orient: vertical;
     overflow: hidden;
     flex-grow: 1; 
-    padding-right: 10px; /* Separación para que no pegue con el borde derecho */
+    padding-right: 10px; 
 }
 
+/* COMPONENTES APPIAN (Clásicos) */
+.badges { display: flex; gap: 5px; align-items: center; flex-shrink: 0; }
+.badge { padding: 3px 8px; border-radius: 12px; font-size: 9px; background: rgba(255,255,255,0.25); font-weight: 600;}
+
+/* Iconos de estado (Compartido) */
+.status-icon { height: 18px; width: auto; display: inline-block; margin-left: 4px; filter: brightness(0) invert(1); }
+.status-icon.piloto-icon { transform: scale(1.15); }
+
+/* EXCEPCIONES PARA ÁREAS CLARAS */
+.project-bar[data-area="legal-y-cumplimiento"], .project-bar[data-area="sci"], .project-bar[data-area="procurement"], .project-bar[data-area="human-ops"] { color: var(--bold-azul); }
+.project-bar[data-area="legal-y-cumplimiento"] .badge, .project-bar[data-area="sci"] .badge, .project-bar[data-area="procurement"] .badge, .project-bar[data-area="human-ops"] .badge { background: rgba(0,0,0,0.08); color: var(--bold-azul); }
+.project-bar[data-area="legal-y-cumplimiento"] .status-icon, .project-bar[data-area="sci"] .status-icon, .project-bar[data-area="procurement"] .status-icon, .project-bar[data-area="human-ops"] .status-icon { filter: brightness(0) invert(12%) sepia(35%) saturate(5412%) hue-rotate(227deg) brightness(90%) contrast(106%); }
+
+
 /* ==========================================================================
-   SISTEMA DE BURBUJAS FLOTANTES DE NOTIFICACIÓN
+   NUEVO SISTEMA DE BURBUJAS (Exclusivo Automation IA)
    ========================================================================== */
 .floating-bubbles {
     position: absolute;
-    top: -10px;    /* Flotan sobresaliendo por arriba */
-    right: -4px;   /* Sobresalen sutilmente por la derecha (la esquinita) */
+    top: -10px;    
+    right: -4px;   
     display: flex;
     gap: 3px;
     align-items: center;
     z-index: 15;
 }
 
+/* Base de todas las burbujas */
 .bubble {
     background: #ffffff;
-    border-radius: 12px; /* Redondas perfectas */
+    border-radius: 12px; 
     height: 22px;
-    width: 22px;         /* Tamaño delicado */
+    min-width: 22px; /* Ahora usa min-width para adaptarse al contenido */
     display: flex;
     align-items: center;
     justify-content: center;
     box-shadow: 0 2px 6px rgba(0,0,0,0.2);
     border: 1px solid var(--bold-gris-claro);
     box-sizing: border-box;
+    padding: 0 3px;
 }
 
-.bubble img {
-    height: 13px;
-    width: auto;
+/* Burbujas de Aplicativos (Más anchas para que Dapta y n8n respiren) */
+.app-bubble {
+    padding: 0 6px; 
+}
+.app-bubble img {
+    max-height: 14px;
+    max-width: 18px; /* Permite que logos horizontales no se estrujen */
     object-fit: contain;
 }
 
-/* Fuerza a los iconos de estado a ser Azul Bold para verse bien sobre fondo blanco */
+/* Iconos de estado dentro de las burbujas */
 .bubble .status-icon {
     filter: brightness(0) invert(12%) sepia(35%) saturate(5412%) hue-rotate(227deg) brightness(90%) contrast(106%) !important;
 }
 .bubble .piloto-icon { transform: scale(1.15); }
 
-/* BURBUJA DEL DESARROLLADOR EXPANDIBLE (TOOLTIP MÁGICO) */
+/* LA MAGIA: BURBUJA DEL DESARROLLADOR EXPANDIBLE */
 .dev-bubble {
-    width: 22px; /* Empieza como un círculo */
-    transition: width 0.3s ease, padding 0.3s ease;
-    overflow: hidden;
-    justify-content: flex-start;
+    max-width: 22px; /* Arranca como un circulito */
+    padding: 0;
+    transition: max-width 0.3s ease;
+    overflow: hidden; /* Oculta lo que no cabe */
+    position: relative;
     cursor: default;
 }
 .dev-bubble:hover {
-    width: auto; /* Se expande hacia la derecha al pasar el mouse */
-    padding-right: 10px;
+    max-width: 120px; /* Se estira suavemente hacia la derecha */
 }
 
+/* La inicial "W" */
 .dev-initial {
-    min-width: 20px; /* Fuerza a la letra inicial a mantenerse centrada en el círculo */
-    text-align: center;
+    position: absolute;
     font-weight: 800;
     color: var(--bold-azul);
     font-size: 11px;
+    transition: opacity 0.2s ease;
 }
 
+/* El nombre completo "Willin" (Oculto inicialmente) */
 .dev-full {
-    white-space: nowrap;
-    font-size: 10px;
+    font-size: 10.5px;
     font-weight: 700;
     color: var(--bold-azul);
     opacity: 0;
-    margin-left: 2px;
-    transition: opacity 0.2s ease 0.1s; /* Retraso sutil para que aparezca suave */
+    white-space: nowrap;
+    padding: 0 10px;
+    transition: opacity 0.2s ease;
+}
+
+/* Al pasar el mouse: La inicial desaparece, el nombre aparece */
+.dev-bubble:hover .dev-initial {
+    opacity: 0;
 }
 .dev-bubble:hover .dev-full {
     opacity: 1;
 }
+
 
 /* ========================================================================== */
 
