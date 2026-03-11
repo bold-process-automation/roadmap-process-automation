@@ -125,7 +125,7 @@ function renderCalendarHeaders() {
     document.getElementById('grid-lines').innerHTML = htmlGrid;
 }
 
-// LA APLANADORA DE FECHAS
+// APLANADORA DE HORAS (Precisión perfecta)
 function parseDateSafe(dateValue) {
     if (!dateValue) return null;
     const str = dateValue.toString().trim();
@@ -205,9 +205,8 @@ function renderProjects() {
     const rowEndPositions = [];
     const containerWidth = scrollArea.offsetWidth || 3800; 
     
-    // Espacio generoso para que las tarjetas gorditas no choquen arriba y abajo
-    const isMonthly = scrollArea.classList.contains('monthly-view');
-    const rowSpacing = isMonthly ? 58 : 40; 
+    // Espacio vertical para alojar las barras gorditas (42px) + burbujas flotantes en el borde superior (-10px)
+    const rowSpacing = 56; 
 
     filteredData.forEach(project => {
         const leftPos = getTimelinePosition(project['Fecha de Inicio']);
@@ -216,6 +215,7 @@ function renderProjects() {
         if (leftPos === null || rightPos === null) return;
         
         if (rightPos > 0 && leftPos < 100) {
+            
             const bar = document.createElement('div');
             bar.className = 'project-bar';
             
@@ -224,7 +224,6 @@ function renderProjects() {
             bar.setAttribute('data-area', areaKey);
             
             const displayLeft = Math.max(0, leftPos);
-            // MATEMÁTICA ESTRICTA: El ancho será EXACTO a las fechas (Sin hackeos de min-width en JS)
             let dateWidthPct = rightPos - leftPos;
             const displayWidthPct = Math.min(dateWidthPct - (displayLeft - leftPos), 100 - displayLeft);
 
@@ -237,34 +236,56 @@ function renderProjects() {
                 bar.style.background = `var(--area-${areaKey}, var(--bold-azul))`;
             }
 
-            const statusKey = normalizeText(project['Estado']);
-            const devName = project['Desarrollador'] || '';
             const projName = project['Nombre del proyecto'] || 'Sin nombre';
-
             bar.setAttribute('title', `Proyecto: ${projName}\nÁrea: ${rawArea}\nEstado: ${project['Estado'] || 'No definido'}`);
 
+            // 1. BURBUJAS DE APLICATIVO (Dapta, n8n, Boost)
+            const appRaw = project['Aplicativo'] ? project['Aplicativo'].toString().toLowerCase() : '';
+            let appBubbles = '';
+            if (appRaw.includes('dapta')) appBubbles += `<div class="bubble"><img src="assets/dapta-logo.png" title="Dapta"></div>`;
+            if (appRaw.includes('n8n')) appBubbles += `<div class="bubble"><img src="assets/n8n-logo.png" title="n8n"></div>`;
+            if (appRaw.includes('boost')) appBubbles += `<div class="bubble"><img src="assets/boost-logo.png" title="Boost AI"></div>`;
+
+            // 2. BURBUJA DE ESTADO
+            const statusKey = normalizeText(project['Estado']);
             let iconHtml = '';
             if (statusKey === 'dev') iconHtml = `<img src="assets/dev.png" class="status-icon">`;
             else if (statusKey === 'test') iconHtml = `<img src="assets/test.png" class="status-icon">`;
             else if (statusKey === 'prod') iconHtml = `<img src="assets/prod.png" class="status-icon">`;
             else if (statusKey === 'piloto') iconHtml = `<img src="assets/piloto1.png" class="status-icon piloto-icon">`;
+            
+            let statusBubble = iconHtml ? `<div class="bubble">${iconHtml}</div>` : '';
 
+            // 3. BURBUJA DEL DESARROLLADOR (Inicial + Tooltip Hover)
+            const devName = project['Desarrollador'] || '';
+            let devBubble = '';
+            if (devName && devName.toLowerCase() !== 'n/a') {
+                const initial = devName.charAt(0).toUpperCase();
+                const shortName = devName.split(' ')[0]; // Tomamos el primer nombre para el tooltip
+                devBubble = `
+                    <div class="bubble dev-bubble">
+                        <span class="dev-initial">${initial}</span>
+                        <span class="dev-full">${shortName}</span>
+                    </div>
+                `;
+            }
+
+            // ARMAMOS EL HTML DE LA BARRA
             bar.innerHTML = `
                 <span class="project-title">${projName}</span>
-                <div class="badges">
-                    ${devName && devName.toLowerCase() !== 'n/a' ? `<span class="badge">${devName}</span>` : ''}
-                    ${iconHtml}
+                <div class="floating-bubbles">
+                    ${appBubbles}
+                    ${statusBubble}
+                    ${devBubble}
                 </div>
             `;
             
-            // Renderizamos primero para poder medir la tarjeta real
             container.appendChild(bar);
 
-            // CÁLCULO DE COLISIÓN PERFECTO Y A PRUEBA DE FALLOS
-            // Mide físicamente cuánto ocupó la tarjeta en la pantalla con el CSS aplicado
+            // CÁLCULO DE COLISIÓN (Toma en cuenta el ancho real de la barra, que por CSS tiene un min-width para que el texto siempre se lea)
             const actualWidthPx = bar.getBoundingClientRect().width || bar.offsetWidth;
             const visualWidthPct = (actualWidthPx / containerWidth) * 100;
-            const visualRightPos = displayLeft + Math.max(displayWidthPct, visualWidthPct);
+            const visualRightPos = displayLeft + visualWidthPct;
 
             let currentRow = 0;
             while (rowEndPositions[currentRow] !== undefined && rowEndPositions[currentRow] > (displayLeft - 0.2)) {
