@@ -46,7 +46,7 @@ body { font-family: 'Montserrat', sans-serif; font-weight: 400; background-color
 .sub-tab:hover { background: #d2d8e9; }
 .sub-tab.active { background: var(--bold-azul); color: white; box-shadow: 0 2px 4px rgba(18, 30, 108, 0.2); }
 
-/* ESTADOS, FILTROS Y TOGGLES (Alineados a la altura de los Tabs principales) */
+/* ESTADOS, FILTROS Y TOGGLES */
 .status-legend { display: flex; align-items: center; gap: 15px; font-size: 12px; font-weight: 600; color: var(--bold-azul); background: #fff; padding: 0 15px; border-radius: 8px; border: 1px solid var(--border-color); box-shadow: 0 2px 5px rgba(0,0,0,0.02); height: 38px; }
 .sl-title { font-weight: 700; margin-right: 5px; color: #555; }
 .sl-item { display: flex; align-items: center; gap: 6px; }
@@ -106,12 +106,40 @@ input:checked + .slider:before { transform: translateX(22px); }
 .timeline-scroll-area.monthly-view .weeks-header { display: none; }
 .timeline-scroll-area.monthly-view .grid-week { border-right-color: transparent; }
 
-.quarters-header { display: flex; border-bottom: 2px solid #fff; background: var(--bold-coral); color: white; border-radius: 8px 8px 0 0;}
-.quarter { text-align: center; font-weight: 700; font-size: 14px; padding: 6px 0; border-right: 2px solid rgba(255,255,255,0.4); box-sizing: border-box; }
+/* ==========================================================================
+   NUEVA ESTÉTICA DE ENCABEZADOS (Q y MESES)
+   ========================================================================== */
+.quarters-header { 
+    display: flex; 
+    border-bottom: 2px solid #fff; 
+    background: var(--bold-azul); /* Cambio a Azul Oscuro */
+    color: white; 
+    border-radius: 8px 8px 0 0;
+}
+.quarter { 
+    text-align: center; 
+    font-weight: 700; 
+    font-size: 14px; 
+    padding: 6px 0; 
+    border-right: 2px solid rgba(255,255,255,0.4); 
+    box-sizing: border-box; 
+}
 .quarter:last-child { border-right: none; }
 
-.months-header { display: flex; border-bottom: 3px solid var(--bold-coral); background: var(--bold-azul); color: white; }
-.month { text-align: center; font-weight: 700; font-size: 13px; padding: 10px 0; border-right: 2px solid rgba(255,255,255,0.3); box-sizing: border-box; }
+.months-header { 
+    display: flex; 
+    border-bottom: 3px solid var(--bold-coral); /* Mantenemos la línea roja debajo que se ve muy bien */
+    background: #D2D4E1; /* Cambio al gris platino */
+    color: var(--bold-azul); /* Letra azul oscuro */
+}
+.month { 
+    text-align: center; 
+    font-weight: 700; 
+    font-size: 13px; 
+    padding: 10px 0; 
+    border-right: 2px solid #ffffff; /* Divisor blanco nítido */
+    box-sizing: border-box; 
+}
 
 .weeks-header { display: flex; border-bottom: 1px solid var(--border-color); background: var(--bold-blanco); }
 .week { text-align: center; font-size: 11px; padding: 6px 0; font-weight: 600; color: var(--bold-azul); border-right: 1px dashed var(--bold-gris-oscuro); box-sizing: border-box; }
