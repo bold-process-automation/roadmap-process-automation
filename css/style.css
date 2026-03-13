@@ -136,6 +136,8 @@ input:checked + .slider:before { transform: translateX(20px); }
 .timeline-wrapper::-webkit-scrollbar-track { background: var(--bg-page); border-radius: 0 0 16px 16px; }
 .timeline-wrapper::-webkit-scrollbar-thumb { background-color: #CBD5E1; border-radius: 10px; }
 .timeline-wrapper::-webkit-scrollbar-thumb:hover { background-color: #94A3B8; }
+.timeline-wrapper { box-shadow: 0 15px 35px rgba(9, 17, 68, 0.15); /* Esta es la sombra que lo integra perfecto */
+}
 
 .timeline-scroll-area { 
     min-width: 3800px; 
