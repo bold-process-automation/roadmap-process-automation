@@ -3,7 +3,11 @@ const sheetApiUrl = 'https://script.google.com/macros/s/AKfycbynd7JOqdCceaBVf_AE
 const wStart = new Date(2026, 0, 1, 0, 0, 0);
 const totalDays = 365; 
 
-let currentTab = 'appian'; 
+// ESTADO INICIAL DEL SISTEMA DE PESTAÑAS
+let currentMainTab = 'appian';       
+let currentSubTab = 'automation ia'; 
+let currentTab = 'appian';           
+
 let data = []; 
 let selectedAreas = []; 
 
@@ -182,7 +186,7 @@ function renderProjects() {
 
     if (!data || data.length === 0) return;
 
-    const isAppianTab = currentTab === 'appian';
+    const isAppianStyle = currentMainTab === 'appian';
 
     let filteredData = data.filter(p => {
         const tabCategory = p['Frente de trabajo'] || p['Frente'] || p['Plataforma'] || p['Equipo'];
@@ -206,7 +210,6 @@ function renderProjects() {
 
     const rowEndPositions = [];
     const containerWidth = scrollArea.offsetWidth || 3800; 
-    
     const rowSpacing = 56; 
 
     filteredData.forEach(project => {
@@ -249,7 +252,8 @@ function renderProjects() {
 
             const devName = project['Desarrollador'] || '';
 
-            if (isAppianTab) {
+            if (isAppianStyle) {
+                // APPIAN
                 bar.innerHTML = `
                     <span class="project-title">${projName}</span>
                     <div class="badges">
@@ -258,6 +262,7 @@ function renderProjects() {
                     </div>
                 `;
             } else {
+                // AUTOMATION IA & WSNH (Burbujas)
                 const appRaw = project['Aplicativo'] ? project['Aplicativo'].toString().toLowerCase() : '';
                 let appBubbles = '';
                 if (appRaw.includes('dapta')) appBubbles += `<div class="bubble app-bubble"><img src="assets/dapta-logo.png" title="Dapta"></div>`;
@@ -278,7 +283,6 @@ function renderProjects() {
                     `;
                 }
 
-                // EL NUEVO ORDEN: Estado -> Apps -> Desarrollador
                 bar.innerHTML = `
                     <span class="project-title">${projName}</span>
                     <div class="floating-bubbles">
@@ -308,14 +312,34 @@ function renderProjects() {
     container.style.height = `${rowEndPositions.length * rowSpacing + 80}px`;
 }
 
-function switchTab(team) {
-    currentTab = team.toLowerCase().trim(); 
-    document.querySelectorAll('.tab').forEach(btn => {
-        btn.classList.remove('active');
-        if (btn.innerText.toLowerCase().includes(currentTab) || btn.innerText.toLowerCase() === currentTab) {
-            btn.classList.add('active');
-        }
-    });
+// =========================================================================
+// NUEVO SISTEMA DE CONTROL DE PESTAÑAS (PADRES E HIJAS)
+// =========================================================================
+function switchMainTab(tab) {
+    currentMainTab = tab;
+    // Actualiza colores de los botones principales
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.getElementById('tab-' + tab).classList.add('active');
+
+    // Muestra u oculta el menú de sub-pestañas
+    if (tab === 'automation') {
+        document.getElementById('sub-tabs-automation').style.display = 'flex';
+        currentTab = currentSubTab; // Filtra usando la sub-pestaña activa (ej. 'wsnh')
+    } else {
+        document.getElementById('sub-tabs-automation').style.display = 'none';
+        currentTab = 'appian'; // Filtra por 'appian'
+    }
+    renderProjects();
+}
+
+function switchSubTab(subtab) {
+    currentSubTab = subtab;
+    currentTab = subtab; // Este es el valor que lee la base de datos ('wsnh' o 'automation ia')
+    
+    // Actualiza colores de las sub-pestañas
+    document.querySelectorAll('.sub-tab').forEach(t => t.classList.remove('active'));
+    document.getElementById('sub-tab-' + subtab.replace(/\s+/g, '-')).classList.add('active');
+    
     renderProjects();
 }
 
