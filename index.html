@@ -8,7 +8,7 @@
     <link rel="icon" type="image/png" href="assets/logo-blanco-ball.png">
     
 
-<link rel="stylesheet" href="css/style.css?v=5">
+<link rel="stylesheet" href="css/style.css?v=6">
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -27,10 +27,17 @@
         
         <div class="controls-header">
             <div class="left-controls">
-                <div class="tabs">
-                    <button class="tab active" onclick="switchTab('Appian')">Appian</button>
-                    <button class="tab" onclick="switchTab('Automation IA')">Automation IA</button>
-                </div>
+    <div class="tabs-container" style="display: flex; flex-direction: column; gap: 8px;">
+        <div class="tabs">
+            <button class="tab active" id="tab-appian" onclick="switchMainTab('appian')">Appian</button>
+            <button class="tab" id="tab-automation" onclick="switchMainTab('automation')">Automation IA</button>
+        </div>
+        <div class="sub-tabs" id="sub-tabs-automation" style="display: none;">
+            <button class="sub-tab active" id="sub-tab-automation-ia" onclick="switchSubTab('automation ia')">Roadmap IA</button>
+            <button class="sub-tab" id="sub-tab-wsnh" onclick="switchSubTab('wsnh')">Campaña WSNH</button>
+        </div>
+    </div>
+</div>
                 
                 <div class="status-legend">
                     <span class="sl-title">Estados:</span>
