@@ -3,10 +3,10 @@ const sheetApiUrl = 'https://script.google.com/macros/s/AKfycbynd7JOqdCceaBVf_AE
 const wStart = new Date(2026, 0, 1, 0, 0, 0);
 const totalDays = 365; 
 
-// ESTADO INICIAL DEL SISTEMA DE PESTAÑAS
-let currentMainTab = 'appian';       
-let currentSubTab = 'automation ia'; 
-let currentTab = 'appian';           
+// ESTADO INICIAL DEL SISTEMA DE PESTAÑAS (Padres e Hijas)
+let currentMainTab = 'appian';       // Pestaña principal activa ('appian' o 'automation')
+let currentSubTab = 'automation ia'; // Sub-pestaña activa ('automation ia' o 'wsnh')
+let currentTab = 'appian';           // El valor real que usa el filtro de búsqueda
 
 let data = []; 
 let selectedAreas = []; 
@@ -186,6 +186,7 @@ function renderProjects() {
 
     if (!data || data.length === 0) return;
 
+    // Detectamos si usamos Appian o si usamos el sistema de Burbujas (Automation/WSNH)
     const isAppianStyle = currentMainTab === 'appian';
 
     let filteredData = data.filter(p => {
@@ -262,7 +263,7 @@ function renderProjects() {
                     </div>
                 `;
             } else {
-                // RENDERIZADO AUTOMATION IA & WSNH (Burbujas Flotantes)
+                // RENDERIZADO AUTOMATION IA & WSNH (Burbujas Flotantes Avanzadas)
                 const appRaw = project['Aplicativo'] ? project['Aplicativo'].toString().toLowerCase() : '';
                 let appBubbles = '';
                 if (appRaw.includes('dapta')) appBubbles += `<div class="bubble app-bubble"><img src="assets/dapta-logo.png" title="Dapta"></div>`;
@@ -283,7 +284,7 @@ function renderProjects() {
                     `;
                 }
 
-                // ORDEN ESTRICTO: Estado -> Aplicativos -> Desarrollador
+                // EL ORDEN ESTRICTO QUE PEDISTE: Estado -> Aplicativos -> Desarrollador
                 bar.innerHTML = `
                     <span class="project-title">${projName}</span>
                     <div class="floating-bubbles">
@@ -335,8 +336,8 @@ function switchMainTab(tab) {
 
 function switchSubTab(subtab) {
     currentSubTab = subtab;
-    currentTab = subtab; // Este es el valor que lee la base de datos ('wsnh' o 'automation ia')
-    
+    currentTab = subtab; // Este es el value real que filtra en Sheets
+
     // Actualiza colores de las sub-pestañas
     document.querySelectorAll('.sub-tab').forEach(t => t.classList.remove('active'));
     document.getElementById('sub-tab-' + subtab.replace(/\s+/g, '-')).classList.add('active');
