@@ -3,10 +3,10 @@ const sheetApiUrl = 'https://script.google.com/macros/s/AKfycbynd7JOqdCceaBVf_AE
 const wStart = new Date(2026, 0, 1, 0, 0, 0);
 const totalDays = 365; 
 
-// ESTADO INICIAL DEL SISTEMA DE PESTAÑAS (Padres e Hijas)
-let currentMainTab = 'appian';       // Pestaña principal activa ('appian' o 'automation')
-let currentSubTab = 'automation ia'; // Sub-pestaña activa ('automation ia' o 'wsnh')
-let currentTab = 'appian';           // El valor real que usa el filtro de búsqueda
+// ESTADO INICIAL DEL SISTEMA DE PESTAÑAS
+let currentMainTab = 'appian';       
+let currentSubTab = 'automation ia'; 
+let currentTab = 'appian';           
 
 let data = []; 
 let selectedAreas = []; 
@@ -104,10 +104,14 @@ function closeFilterMenu() {
     populateFilterDropdown(); 
 }
 
+// =========================================================================
+// RENDERIZADO DE CABECERAS (Semanas en una sola línea)
+// =========================================================================
 function renderCalendarHeaders() {
     const monthsNames = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
     const daysInMonths = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]; 
     const quarters = [{ name: 'Q1', days: 90 }, { name: 'Q2', days: 91 }, { name: 'Q3', days: 92 }, { name: 'Q4', days: 92 }];
+    
     let htmlQuarters = '';
     quarters.forEach(q => { htmlQuarters += `<div class="quarter" style="width: ${(q.days / totalDays) * 100}%;">${q.name}</div>`; });
     document.getElementById('quarters-header').innerHTML = htmlQuarters;
@@ -117,8 +121,10 @@ function renderCalendarHeaders() {
         const monthWidthPct = (days / totalDays) * 100;
         htmlMonths += `<div class="month" style="width: ${monthWidthPct}%;">${monthsNames[i]}</div>`;
         htmlGrid += `<div class="grid-month-container" style="width: ${monthWidthPct}%;">`;
+        
         for(let w = 1; w <= 4; w++) {
-            htmlWeeks += `<div class="week" style="width: ${monthWidthPct / 4}%;">Semana ${w}</div>`;
+            // FIX: Utilizamos S1, S2, S3, S4 para que siempre quede en una sola línea elegante
+            htmlWeeks += `<div class="week" style="width: ${monthWidthPct / 4}%;">S${w}</div>`;
             htmlGrid += `<div class="grid-week"></div>`;
         }
         htmlGrid += `</div>`; 
@@ -129,7 +135,6 @@ function renderCalendarHeaders() {
     document.getElementById('grid-lines').innerHTML = htmlGrid;
 }
 
-// APLANADORA DE HORAS
 function parseDateSafe(dateValue) {
     if (!dateValue) return null;
     const str = dateValue.toString().trim();
@@ -172,11 +177,19 @@ function scrollToToday() {
     wrapper.scrollTo({ left: Math.max(0, todayPosition - (wrapper.offsetWidth / 2)), behavior: 'smooth' });
 }
 
+// =========================================================================
+// FIX: TOGGLE SIN ANIMACIÓN EXTRAÑA EN APPIAN
+// =========================================================================
 function toggleViewMode() {
     const isMonthly = document.getElementById('viewToggle').checked;
+    
+    // Solo agregamos/quitamos la clase que oculta las semanas. 
+    // El CSS se encarga del resto sin animaciones de ancho para Appian.
     document.getElementById('mainScrollArea').classList.toggle('monthly-view', isMonthly);
     document.getElementById('toggleContainer').classList.toggle('monthly-active', isMonthly);
-    setTimeout(() => { renderProjects(); scrollToToday(); }, 300);
+    
+    // Renderizamos rápidamente los proyectos para que ajusten sus posiciones
+    setTimeout(() => { renderProjects(); }, 50);
 }
 
 function renderProjects() {
@@ -186,7 +199,6 @@ function renderProjects() {
 
     if (!data || data.length === 0) return;
 
-    // Detectamos si usamos Appian o si usamos el sistema de Burbujas (Automation/WSNH)
     const isAppianStyle = currentMainTab === 'appian';
 
     let filteredData = data.filter(p => {
@@ -263,7 +275,7 @@ function renderProjects() {
                     </div>
                 `;
             } else {
-                // RENDERIZADO AUTOMATION IA & WSNH (Burbujas Flotantes Avanzadas)
+                // RENDERIZADO AUTOMATION IA (Burbujas Flotantes y Logos inyectados)
                 const appRaw = project['Aplicativo'] ? project['Aplicativo'].toString().toLowerCase() : '';
                 let appBubbles = '';
                 if (appRaw.includes('dapta')) appBubbles += `<div class="bubble app-bubble"><img src="assets/dapta-logo.png" title="Dapta"></div>`;
@@ -284,7 +296,6 @@ function renderProjects() {
                     `;
                 }
 
-                // EL ORDEN ESTRICTO QUE PEDISTE: Estado -> Aplicativos -> Desarrollador
                 bar.innerHTML = `
                     <span class="project-title">${projName}</span>
                     <div class="floating-bubbles">
@@ -315,7 +326,7 @@ function renderProjects() {
 }
 
 // =========================================================================
-// NUEVO SISTEMA DE CONTROL DE PESTAÑAS (PADRES E HIJAS)
+// SISTEMA DE CONTROL DE PESTAÑAS (Layout Appian vs Automation)
 // =========================================================================
 function switchMainTab(tab) {
     currentMainTab = tab;
@@ -325,23 +336,28 @@ function switchMainTab(tab) {
 
     const scrollArea = document.getElementById('mainScrollArea');
 
-    // Muestra u oculta el menú de sub-pestañas y aplica la optimización de ancho
     if (tab === 'automation') {
         document.getElementById('sub-tabs-automation').style.display = 'flex';
-        currentTab = currentSubTab; // Filtra usando la sub-pestaña activa
+        currentTab = currentSubTab; // Filtra usando la sub-pestaña activa (ej. 'wsnh')
         scrollArea.classList.remove('appian-view'); // Desactiva ancho 100% para mantener scroll en IA
     } else {
         document.getElementById('sub-tabs-automation').style.display = 'none';
         currentTab = 'appian'; // Filtra por 'appian'
-        scrollArea.classList.add('appian-view'); // Activa ancho 100% para reducir scroll horizontal
+        scrollArea.classList.add('appian-view'); // Activa ancho 100% en Appian
     }
+    
+    // Resetear el toggle al cambiar de pestaña para evitar cruces
+    document.getElementById('viewToggle').checked = false;
+    scrollArea.classList.remove('monthly-view');
+    document.getElementById('toggleContainer').classList.remove('monthly-active');
+
     renderProjects();
 }
 
 function switchSubTab(subtab) {
     currentSubTab = subtab;
-    currentTab = subtab; // Este es el value real que filtra en Sheets
-
+    currentTab = subtab; // Este es el valor que lee la base de datos ('wsnh' o 'automation ia')
+    
     // Actualiza colores de las sub-pestañas
     document.querySelectorAll('.sub-tab').forEach(t => t.classList.remove('active'));
     document.getElementById('sub-tab-' + subtab.replace(/\s+/g, '-')).classList.add('active');
@@ -360,6 +376,10 @@ async function loadDataAndRender() {
         try {
             data = JSON.parse(cachedData);
             populateFilterDropdown(); 
+            // Configuramos la vista inicial para Appian (100% ancho)
+            if (currentMainTab === 'appian') {
+                document.getElementById('mainScrollArea').classList.add('appian-view');
+            }
             renderProjects();
             setTimeout(scrollToToday, 100);
             renderTodayLine();
@@ -378,6 +398,12 @@ async function loadDataAndRender() {
         sessionStorage.setItem('boldRoadmapData', JSON.stringify(data));
         
         populateFilterDropdown(); 
+        
+        // Configuramos la vista inicial para Appian (100% ancho)
+        if (currentMainTab === 'appian') {
+            document.getElementById('mainScrollArea').classList.add('appian-view');
+        }
+        
         renderProjects();
         renderTodayLine();
         
