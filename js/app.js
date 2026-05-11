@@ -248,8 +248,9 @@ function renderProjects() {
                 bar.style.background = `var(--area-${areaKey}, var(--bold-azul))`;
             }
 
-            const projName = project['Nombre del proyecto'] || 'Sin nombre';
-            bar.setAttribute('title', `Proyecto: ${projName}\nÁrea: ${rawArea}\nEstado: ${project['Estado'] || 'No definido'}`);
+const projName = project['Nombre del proyecto'] || 'Sin nombre';
+const desc = project['Descripción'] || 'Sin descripción disponible';
+bar.setAttribute('title', desc);
 
             let iconHtml = '';
             if (statusKey === 'dev') iconHtml = `<img src="assets/dev.png" class="status-icon">`;
