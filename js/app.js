@@ -250,7 +250,7 @@ function renderProjects() {
 
 const projName = project['Nombre del proyecto'] || 'Sin nombre';
 const desc = project['Descripción'] || 'Sin descripción disponible';
-bar.setAttribute('title', desc);
+bar.setAttribute('title', `Proyecto: ${projName}\nDescripción: ${desc}`);
 
             let iconHtml = '';
             if (statusKey === 'dev') iconHtml = `<img src="assets/dev.png" class="status-icon">`;
